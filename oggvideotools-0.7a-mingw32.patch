@@ -1,0 +1,85 @@
+diff -rupN originalsrc//fileRepository.h src//fileRepository.h
+--- originalsrc//fileRepository.h	2009-03-22 14:38:36 +0100
++++ src//fileRepository.h	2015-04-20 01:26:36 +0200
+@@ -25,6 +25,7 @@
+ #include <stdio.h>
+ 
+ #include "definition.h"
++#include <getopt.h>
+ #include "mediaRepository.h"
+ #include "rawMediaPacket.h"
+ 
+diff -rupN originalsrc//oggCat.cpp src//oggCat.cpp
+--- originalsrc//oggCat.cpp	2009-03-22 14:38:36 +0100
++++ src//oggCat.cpp	2015-04-21 12:56:05 +0200
+@@ -2,6 +2,7 @@
+ #include <map>
+ #include <vector>
+ #include <string>
++#include <time.h>
+ 
+ #include <cstdlib>
+ 
+@@ -78,7 +79,7 @@ bool getNextFile(std::string& fileName,
+ 
+ int main(int argc, char* argv[]) {
+ 
+-  srandom(time(0));
++  srand(time(0));
+ 
+   std::string help("-h");
+   if ((argc > 1) && (help == argv[1])) {
+diff -rupN originalsrc//oggCut.cpp src//oggCut.cpp
+--- originalsrc//oggCut.cpp	2009-03-22 14:38:36 +0100
++++ src//oggCut.cpp	2015-04-21 12:52:26 +0200
+@@ -24,6 +24,7 @@
+ #include <map>
+ #include <cstdlib>
+ #include <ctime>
++#include <getopt.h>
+ 
+ #include "fileRepository.h"
+ #include "streamSerializer.h"
+@@ -100,7 +101,7 @@ int main(int argc, char* argv[])
+   std::string outputFile;
+   std::string programName(argv[0]);
+ 
+-  srandom(time(0));
++  srand(time(0));
+ 
+   int opt;
+   while ((opt = getopt(argc, argv, "hi:o:s:e:l:")) != EOF)
+diff -rupN originalsrc//oggDump.cpp src//oggDump.cpp
+--- originalsrc//oggDump.cpp	2009-03-22 14:38:36 +0100
++++ src//oggDump.cpp	2015-04-20 01:25:34 +0200
+@@ -34,7 +34,8 @@
+ #include "oggStreamDecoder.h"
+ #include "oggPacket.h"
+ #include "oggBOSExtractorFactory.h"
+-
++#include <getopt.h>
++ 
+ struct OutputUnit {
+   OggEncoder     encoder;
+   FileRepository repository;
+diff -rupN originalsrc//oggStreamEncoder.cpp src//oggStreamEncoder.cpp
+--- originalsrc//oggStreamEncoder.cpp	2009-03-22 14:38:36 +0100
++++ src//oggStreamEncoder.cpp	2015-04-21 12:52:00 +0200
+@@ -62,7 +62,7 @@ uint32 OggStreamEncoder::findUniqueSeria
+   uint32 serial;
+ 
+   while(!isUnique) {
+-    serial     = (origSerial?origSerial:random());
++    serial     = (origSerial?origSerial:rand());
+     isUnique   = true;
+     origSerial = 0;
+ 
+@@ -239,7 +239,7 @@ void OggStreamEncoder::createPage(uint32
+   uint8*     body     (segments+segmentsSize);
+ 
+   /* set the header information */
+-  bzero(header,sizeof(OggHeader));
++  memset(header, 0, sizeof(OggHeader));
+   memcpy(header->ogg,"OggS",4);
+   header->tableSegments = segmentsSize;
+   header->pageNo        = pageCounter++;
